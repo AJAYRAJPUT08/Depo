@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: ai-office-analytics-api
+    runtime: python
+    plan: free
+    rootDir: .
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --chdir backend app:app --bind 0.0.0.0:$PORT --workers 1 --threads 4 --timeout 120
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: FRONTEND_ORIGIN
+        value: "*"          # set this to your exact Vercel URL in production, e.g. https://your-app.vercel.app
+      - key: DEMO_MODE
+        value: "true"       # set to "false" for real shift lengths instead of the 1s=1min demo speed-up
+      - key: FACE_MODEL_PACK
+        value: buffalo_s
+      - key: FACE_CTX_ID
+        value: "-1"         # CPU. Set to 0 only if the plan/instance has an NVIDIA GPU + CUDA.
+      - key: DATA_DIR
+        value: /var/data/data
+      - key: PHOTOS_DIR
+        value: /var/data/employee_photos
+      - key: UNKNOWN_DIR
+        value: /var/data/unknown_faces
+    disk:
+      name: ai-office-analytics-data
+      mountPath: /var/data
+      sizeGB: 1
